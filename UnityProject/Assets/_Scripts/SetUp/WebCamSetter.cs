@@ -21,7 +21,18 @@ public class WebCamSetter : MonoBehaviour
     void FixedUpdate()
     {
         if (GameManager.Instance.GetWebcam() == null || _webcamName == GameManager.Instance.GetWebcam().deviceName)
+        {
+            if (GameManager.Instance.GetWebcam() == null)
+            {
+                _webcamName = null;
+                _image.material.mainTexture = null;
+                _image.color = new Vector4(1, 1, 1, 0);
+                _image.SetMaterialDirty();
+            }
+
             return;
+        }
+            
 
         _image.enabled = true;
         _image.material.mainTexture = GameManager.Instance.GetWebcam();

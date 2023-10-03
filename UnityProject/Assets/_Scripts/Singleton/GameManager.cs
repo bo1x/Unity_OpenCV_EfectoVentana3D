@@ -22,12 +22,15 @@ public class GameManager : MonoBehaviour
 
     public void SetWebcam( WebCamTexture actualWebcam )
     {
-        if(_webcam != null)
+        if (_webcam != null)
+        {
+            if (_webcam.deviceName == actualWebcam.deviceName)
+                return;
+
             _webcam.Stop();
+        }
 
         _webcam = actualWebcam;
-        if (_webcam.isPlaying)
-            return;
 
         GameManager.Instance.WebCamConstructor(60, 640, 360);
         _webcam.Play();
@@ -40,6 +43,15 @@ public class GameManager : MonoBehaviour
         Debug.LogError("No hay webcams disponibles");
         //Mandarte a la escena o ponerte el prefab para configurar la webcam
 
+    }
+
+    public void StopWebcam()
+    {
+        if (_webcam == null)
+            return;
+
+        _webcam.Stop();
+        _webcam = null;
     }
 
 
