@@ -25,7 +25,7 @@ public class WebCamSetter : MonoBehaviour
 
         _image.enabled = true;
         _image.material.mainTexture = GameManager.Instance.GetWebcam();
-        GameManager.Instance.WebCamConstructor(120, 640, 360);
+        GameManager.Instance.WebCamConstructor(60, 1920, 1080);
         _image.SetMaterialDirty();
         _webcamName = GameManager.Instance.GetWebcam().deviceName;
 
