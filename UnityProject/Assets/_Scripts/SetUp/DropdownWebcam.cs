@@ -16,9 +16,22 @@ public class DropdownWebcam : MonoBehaviour
         _realValue = 0;
         _dropdown = GetComponent<TMP_Dropdown>();
 
-        _text = "(none)";
-        _dropdown.captionText.text = "(none)";
         SetNewList();
+    }
+
+    private void Start()
+    {
+        if(GameManager.Instance.GetWebcam() == null)
+        {
+            _text = "(none)";
+            _dropdown.captionText.text = "(none)";
+        }
+        else
+        {
+            _text = GameManager.Instance.GetWebcam().deviceName;
+            _dropdown.captionText.text = GameManager.Instance.GetWebcam().deviceName;
+        }
+
     }
 
     // Update is called once per frame
