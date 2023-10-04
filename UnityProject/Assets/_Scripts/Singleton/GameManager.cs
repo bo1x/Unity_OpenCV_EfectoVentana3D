@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     private WebCamTexture _webcam;
     private bool _canEyeTracking;
+    private bool _canDevelopeMode;
 
     private void Awake()
     {
@@ -75,6 +76,16 @@ public class GameManager : MonoBehaviour
     public void SetEyeTracking(bool value)
     {
         _canEyeTracking = value;
+    }
+
+    public bool CanDevelopeMode()
+    {
+        return _canDevelopeMode;
+    }
+
+    public void SetDevelopeMode(bool value)
+    {
+        _canDevelopeMode = value;
     }
 
 }
