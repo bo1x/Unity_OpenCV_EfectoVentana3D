@@ -1,6 +1,10 @@
+using OpenCvSharp;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEditor.Playables;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 
 public class GameManager : MonoBehaviour
 {
@@ -34,7 +38,7 @@ public class GameManager : MonoBehaviour
 
         _webcam = actualWebcam;
 
-        GameManager.Instance.WebCamConstructor(60, 640, 360);
+        //GameManager.Instance.WebCamConstructor(60, 640, 360);
         _webcam.Play();
         Debug.Log(_webcam.deviceName);
         //mas paridas para el inicio de la webcam
@@ -67,6 +71,83 @@ public class GameManager : MonoBehaviour
     {
         return _webcam;
     }
+
+
+    //OpenCV Things
+
+    public Mat TextureToMat(Texture2D sourceTexture)
+    {
+        
+        int imgHeight = sourceTexture.height;
+        int imgWidth = sourceTexture.width;
+
+        Color32[] c = sourceTexture.GetPixels32();
+        Debug.Log(c[50]);
+
+        byte[] matData = new byte[imgHeight * imgWidth];
+        Vec3b[] videoSourceImageData = new Vec3b[imgHeight * imgWidth]; ;
+        
+        Parallel.For(0, imgHeight, i =>
+        {
+            for (var x = 0; x < imgWidth; x++)
+            {
+                var col = c[x + i * imgWidth];
+                var vec3 = new Vec3b
+                {
+                    Item0 = col.b,
+                    Item1 = col.g,
+                    Item2 = col.r
+                };
+
+                videoSourceImageData[x + i * imgWidth] = vec3;
+                //Debug.Log(videoSourceImageData[x + i * imgWidth] + " " + vec3 + col);
+            }
+        });
+
+        Mat mat = new Mat(imgWidth, imgHeight, MatType.CV_8UC3);
+        
+        /*
+        mat.SetArray(videoSourceImageData);
+        
+        return mat;
+        */
+        return null;
+    }
+        
+
+    public Texture2D MatToTexture(Mat sourceMat)
+    {
+        int imgHeight = sourceMat.Height;
+        int imgWidth = sourceMat.Width;
+
+        byte[] matData = new byte[imgHeight * imgWidth];
+
+        sourceMat.GetArray(out matData);
+
+        Color32[] c = new Color32[imgHeight * imgWidth];
+
+         Parallel.For(0, imgHeight, i => {
+             for (var x = 0; x < imgWidth; x++)
+             {
+                 byte vec = matData[x + i * imgWidth];
+                 var color32 = new Color32
+                 {
+                     r = vec,
+                     g = vec,
+                     b = vec,
+                     a = 0
+                 };
+                 c[x + i * imgWidth] = color32;
+             }
+         });
+
+         Texture2D tex = new Texture2D(imgWidth, imgHeight, TextureFormat.RGBA32, true, true);
+         tex.SetPixels32(c);
+         tex.Apply();
+
+         return tex;
+    }
+
 
     public bool CanEyeTracking()
     {
