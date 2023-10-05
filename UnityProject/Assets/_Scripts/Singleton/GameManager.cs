@@ -105,10 +105,11 @@ public class GameManager : MonoBehaviour
         });
 
         Mat mat = new Mat(imgWidth, imgHeight, MatType.CV_8UC3);
-        
-        /*
+
+        Debug.Log(mat.Width);
         mat.SetArray(videoSourceImageData);
         
+        /*
         return mat;
         */
         return null;
