@@ -85,18 +85,19 @@ public class GameManager : MonoBehaviour
         Debug.Log(c[50]);
 
         byte[] matData = new byte[imgHeight * imgWidth];
-        Vec3b[] videoSourceImageData = new Vec3b[imgHeight * imgWidth]; ;
+        Vec4b[] videoSourceImageData = new Vec4b[imgHeight * imgWidth]; ;
         
         Parallel.For(0, imgHeight, i =>
         {
             for (var x = 0; x < imgWidth; x++)
             {
                 var col = c[x + i * imgWidth];
-                var vec3 = new Vec3b
+                var vec3 = new Vec4b
                 {
                     Item0 = col.b,
                     Item1 = col.g,
-                    Item2 = col.r
+                    Item2 = col.r,
+                    Item3 = col.a
                 };
 
                 videoSourceImageData[x + i * imgWidth] = vec3;
@@ -104,15 +105,12 @@ public class GameManager : MonoBehaviour
             }
         });
 
-        Mat mat = new Mat(imgWidth, imgHeight, MatType.CV_8UC3);
+        Mat mat = new Mat(imgWidth, imgHeight, MatType.CV_8UC4);
 
         Debug.Log(mat.Width);
         mat.SetArray(videoSourceImageData);
-        
-        /*
+
         return mat;
-        */
-        return null;
     }
         
 
@@ -121,7 +119,7 @@ public class GameManager : MonoBehaviour
         int imgHeight = sourceMat.Height;
         int imgWidth = sourceMat.Width;
 
-        byte[] matData = new byte[imgHeight * imgWidth];
+        Vec4b[] matData = new Vec4b[imgHeight * imgWidth];
 
         sourceMat.GetArray(out matData);
 
@@ -130,13 +128,13 @@ public class GameManager : MonoBehaviour
          Parallel.For(0, imgHeight, i => {
              for (var x = 0; x < imgWidth; x++)
              {
-                 byte vec = matData[x + i * imgWidth];
+                 //byte vec = matData[x + i * imgWidth];
                  var color32 = new Color32
                  {
-                     r = vec,
-                     g = vec,
-                     b = vec,
-                     a = 0
+                     r = matData[x + i * imgWidth].Item2,
+                     g = matData[x + i * imgWidth].Item1,
+                     b = matData[x + i * imgWidth].Item0,
+                     a = matData[x + i * imgWidth].Item3
                  };
                  c[x + i * imgWidth] = color32;
              }
@@ -149,6 +147,13 @@ public class GameManager : MonoBehaviour
          return tex;
     }
 
+    public Texture2D WebcamToTexture2D(WebCamTexture sourceCam)
+    {
+        Texture2D _Texture = new Texture2D(GameManager.Instance.GetWebcam().width, GameManager.Instance.GetWebcam().height);
+        _Texture.SetPixels32(GameManager.Instance.GetWebcam().GetPixels32());
+        _Texture.Apply();
+        return _Texture;
+    }
 
     public bool CanEyeTracking()
     {
