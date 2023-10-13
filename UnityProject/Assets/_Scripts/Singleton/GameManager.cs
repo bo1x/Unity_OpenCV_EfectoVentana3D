@@ -109,6 +109,8 @@ public class GameManager : MonoBehaviour
 
         Debug.Log(mat.Width);
         mat.SetArray(videoSourceImageData);
+        Debug.Log(c[600]);
+        Debug.Log(videoSourceImageData[600]);
 
         return mat;
     }
@@ -144,13 +146,16 @@ public class GameManager : MonoBehaviour
          tex.SetPixels32(c);
          tex.Apply();
 
-         return tex;
+        Debug.Log(c[600]);
+        Debug.Log(matData[600]);
+
+        return tex;
     }
 
     public Texture2D WebcamToTexture2D(WebCamTexture sourceCam)
     {
-        Texture2D _Texture = new Texture2D(GameManager.Instance.GetWebcam().width, GameManager.Instance.GetWebcam().height);
-        _Texture.SetPixels32(GameManager.Instance.GetWebcam().GetPixels32());
+        Texture2D _Texture = new Texture2D(sourceCam.width, sourceCam.height);
+        _Texture.SetPixels32(sourceCam.GetPixels32());
         _Texture.Apply();
         return _Texture;
     }
