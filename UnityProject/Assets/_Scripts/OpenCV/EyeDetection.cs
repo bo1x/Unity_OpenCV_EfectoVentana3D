@@ -33,11 +33,11 @@ public class EyeDetection : MonoBehaviour
             Debug.Log("");
         }
 
-        wct = new WebCamTexture(wdevice[1].name, 640, 480);
+        wct = new WebCamTexture(wdevice[0].name, 640, 480);
         wct.Play();
 
 
-
+       
 
 
     }
@@ -45,6 +45,7 @@ public class EyeDetection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
 
 
         Texture2D text = GameManager.Instance.WebcamToTexture2D(wct);
@@ -73,9 +74,9 @@ public class EyeDetection : MonoBehaviour
 
 
 
+        
 
-
-
+        Cv2.ImWrite(Application.dataPath + "ImagenFinal.png", src);
         ventana.ShowImage(src);
 
     }

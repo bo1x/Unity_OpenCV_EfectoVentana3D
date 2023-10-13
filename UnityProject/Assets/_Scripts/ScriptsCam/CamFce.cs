@@ -4,7 +4,7 @@ using UnityEngine;
 using OpenCvSharp;
 using Unity.VisualScripting;
 
-public class FaceDetection : MonoBehaviour
+public class CamFce : MonoBehaviour
 {
     public WebCamTexture wct;
     WebCamDevice[] wdevice;
@@ -12,13 +12,12 @@ public class FaceDetection : MonoBehaviour
     CascadeClassifier faceCascade = new CascadeClassifier();
     CascadeClassifier eyeCascade = new CascadeClassifier();
 
-    Window ventana;
-
+    int AltoCam = 0;
+    int AnchoCam = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        ventana = new Window("ventana");
 
 
         faceCascade.Load(Application.dataPath + "/haarcascades/haarcascade_frontalface_default.xml");
@@ -35,7 +34,8 @@ public class FaceDetection : MonoBehaviour
         wct.Play();
 
 
-
+        AltoCam = wct.height;
+        AnchoCam = wct.width;
 
 
     }
@@ -49,7 +49,7 @@ public class FaceDetection : MonoBehaviour
         using var src = new Mat(Application.dataPath + "textura.png", ImreadModes.Grayscale);
         using var dst = new Mat();
 
-        
+
 
         var faces = faceCascade.DetectMultiScale(src, 1.3, 5);
         foreach (var face in faces)
@@ -57,25 +57,22 @@ public class FaceDetection : MonoBehaviour
 
 
 
-            Debug.Log(face.Location);
-               
-            
-            
+            Debug.Log(face.Location+" "+face.Height);
+
+
+
         }
 
+       
+        
 
 
 
-
-
-            
-            
-            ventana.ShowImage(src);
+       
 
     }
     void OnDestroy()
     {
-        ventana.Close();
         if (wct != null)
         {
             wct.Stop();
