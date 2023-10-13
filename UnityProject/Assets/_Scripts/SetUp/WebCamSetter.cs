@@ -47,6 +47,7 @@ public class WebCamSetter : MonoBehaviour
 
         //Debug.Log(GameManager.Instance.TextureToMat(_material));
         //_image.material.mainTexture = GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam());
+        Cv2.ImWrite(Application.dataPath + "ImagenFinal.jpg", GameManager.Instance.TextureToMat(GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam())));
         _image.material.mainTexture = GameManager.Instance.MatToTexture(GameManager.Instance.TextureToMat(GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam())));
         _image.SetMaterialDirty();
         _webcamName = GameManager.Instance.GetWebcam().deviceName;

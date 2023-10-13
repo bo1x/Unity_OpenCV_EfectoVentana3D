@@ -89,9 +89,9 @@ public class GameManager : MonoBehaviour
         
         Parallel.For(0, imgHeight, i =>
         {
-            for (var x = 0; x < imgWidth; x++)
+            for (var j = 0; j < imgWidth; j++)
             {
-                var col = c[x + i * imgWidth];
+                var col = c[j + i * imgWidth];
                 var vec3 = new Vec4b
                 {
                     Item0 = col.b,
@@ -100,17 +100,21 @@ public class GameManager : MonoBehaviour
                     Item3 = col.a
                 };
 
-                videoSourceImageData[x + i * imgWidth] = vec3;
+                videoSourceImageData[j + i * imgWidth] = vec3;
                 //Debug.Log(videoSourceImageData[x + i * imgWidth] + " " + vec3 + col);
             }
         });
 
-        Mat mat = new Mat(imgWidth, imgHeight, MatType.CV_8UC4);
+        Mat mat = new Mat(imgHeight, imgWidth, MatType.CV_8UC4);
 
         Debug.Log(mat.Width);
         mat.SetArray(videoSourceImageData);
         Debug.Log(c[600]);
         Debug.Log(videoSourceImageData[600]);
+
+
+
+        Cv2.Rotate(mat, mat, RotateFlags.Rotate180); 
 
         return mat;
     }
@@ -118,6 +122,8 @@ public class GameManager : MonoBehaviour
 
     public Texture2D MatToTexture(Mat sourceMat)
     {
+        Cv2.Rotate(sourceMat, sourceMat, RotateFlags.Rotate180);
+
         int imgHeight = sourceMat.Height;
         int imgWidth = sourceMat.Width;
 
@@ -130,7 +136,6 @@ public class GameManager : MonoBehaviour
          Parallel.For(0, imgHeight, i => {
              for (var x = 0; x < imgWidth; x++)
              {
-                 //byte vec = matData[x + i * imgWidth];
                  var color32 = new Color32
                  {
                      r = matData[x + i * imgWidth].Item2,
