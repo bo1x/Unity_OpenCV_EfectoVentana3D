@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
 
 
 
-        Cv2.Rotate(mat, mat, RotateFlags.Rotate180); 
+        Cv2.Flip(mat, mat, FlipMode.X);
 
         return mat;
     }
@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
 
     public Texture2D MatToTexture(Mat sourceMat)
     {
-        Cv2.Rotate(sourceMat, sourceMat, RotateFlags.Rotate180);
+        Cv2.Flip(sourceMat, sourceMat, FlipMode.X);
 
         int imgHeight = sourceMat.Height;
         int imgWidth = sourceMat.Width;
