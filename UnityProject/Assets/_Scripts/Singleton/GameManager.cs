@@ -75,6 +75,11 @@ public class GameManager : MonoBehaviour
 
     //OpenCV Things
 
+    public Mat WebCamMat()
+    {
+        return GameManager.Instance.TextureToMat(GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam()));
+    }
+
     public Mat TextureToMat(Texture2D sourceTexture)
     {
         
@@ -156,6 +161,7 @@ public class GameManager : MonoBehaviour
 
         return tex;
     }
+
 
     public Texture2D WebcamToTexture2D(WebCamTexture sourceCam)
     {
