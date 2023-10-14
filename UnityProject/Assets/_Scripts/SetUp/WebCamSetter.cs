@@ -1,3 +1,4 @@
+using OpenCvSharp;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,8 @@ public class WebCamSetter : MonoBehaviour
 {
     Image _image;
     string _webcamName;
+
+    Texture2D _material;
 
     public float durationLerp;
 
@@ -20,7 +23,7 @@ public class WebCamSetter : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (GameManager.Instance.GetWebcam() == null || _webcamName == GameManager.Instance.GetWebcam().deviceName)
+        if (GameManager.Instance.GetWebcam() == null /* || _webcamName == GameManager.Instance.GetWebcam().deviceName*/)
         {
             if (GameManager.Instance.GetWebcam() == null)
             {
@@ -35,8 +38,17 @@ public class WebCamSetter : MonoBehaviour
             
 
         _image.enabled = true;
-        _image.material.mainTexture = GameManager.Instance.GetWebcam();
-        GameManager.Instance.WebCamConstructor(60, 1920, 1080);
+        //_image.material.mainTexture = GameManager.Instance.GetWebcam();
+        //GameManager.Instance.WebCamConstructor(30, 640, 380);
+
+        /*_material = new Texture2D(GameManager.Instance.GetWebcam().width, GameManager.Instance.GetWebcam().height);
+        _material.SetPixels32(GameManager.Instance.GetWebcam().GetPixels32());
+        _material.Apply();*/
+
+        //Debug.Log(GameManager.Instance.TextureToMat(_material));
+        //_image.material.mainTexture = GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam());
+        Cv2.ImWrite(Application.dataPath + "ImagenFinal.jpg", GameManager.Instance.WebCamMat());
+        _image.material.mainTexture = GameManager.Instance.MatToTexture(GameManager.Instance.TextureToMat(GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam())));
         _image.SetMaterialDirty();
         _webcamName = GameManager.Instance.GetWebcam().deviceName;
 
