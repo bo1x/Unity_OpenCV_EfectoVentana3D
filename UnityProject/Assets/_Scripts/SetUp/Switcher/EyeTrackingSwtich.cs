@@ -1,17 +1,10 @@
-using System.Collections;
+ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EyeTrackingSwtich : MonoBehaviour
+public class EyeTrackingSwitch : Switcher
 {
-    private Image _Image;
-
-    // Start is called before the first frame update
-    void Awake()
-    {
-        _Image = GetComponent<Image>();
-    }
 
     private void Start()
     {
@@ -21,12 +14,6 @@ public class EyeTrackingSwtich : MonoBehaviour
             ButtonOff();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void OnClick()
     {
         GameManager.Instance.SetEyeTracking(!GameManager.Instance.CanEyeTracking());
@@ -34,15 +21,5 @@ public class EyeTrackingSwtich : MonoBehaviour
             ButtonOn();
         else
             ButtonOff();
-    }
-
-    private void ButtonOn()
-    {
-        _Image.color = Color.green;
-    }
-
-    private void ButtonOff()
-    {
-        _Image.color = Color.red;
     }
 }

@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     private WebCamTexture _webcam;
     private bool _canEyeTracking;
     private bool _canDevelopeMode;
+    private bool _flipWebCam = true;
+
+    private int _targetFrameRate = 60;
 
     private void Awake()
     {
@@ -24,7 +27,12 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(this);
         }
+
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = _targetFrameRate;
     }
+
+    #region Webcam
 
     public void SetWebcam( WebCamTexture actualWebcam )
     {
@@ -38,10 +46,8 @@ public class GameManager : MonoBehaviour
 
         _webcam = actualWebcam;
 
-        //GameManager.Instance.WebCamConstructor(60, 640, 360);
+        GameManager.Instance.WebCamConstructor(30, 640, 360);
         _webcam.Play();
-        Debug.Log(_webcam.deviceName);
-        //mas paridas para el inicio de la webcam
     }
 
     public void NoAvaibleWebcam()
@@ -71,15 +77,26 @@ public class GameManager : MonoBehaviour
     {
         return _webcam;
     }
+    #endregion
 
-
+    #region OpenCV
     //OpenCV Things
 
     public Mat WebCamMat()
     {
-        return GameManager.Instance.TextureToMat(GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam()));
+        int imgHeight = _webcam.height;
+        int imgWidth = _webcam.width;
+
+        Mat mat = new Mat(imgHeight, imgWidth, MatType.CV_8UC4);
+        mat = TextureToMat(WebcamToTexture2D(_webcam));
+        
+        if(_flipWebCam)
+            Cv2.Flip(mat, mat, FlipMode.Y);
+
+        return mat;
     }
 
+    #region Conversiones entre imagenes
     public Mat TextureToMat(Texture2D sourceTexture)
     {
         
@@ -87,37 +104,29 @@ public class GameManager : MonoBehaviour
         int imgWidth = sourceTexture.width;
 
         Color32[] c = sourceTexture.GetPixels32();
-        Debug.Log(c[50]);
 
         byte[] matData = new byte[imgHeight * imgWidth];
-        Vec4b[] videoSourceImageData = new Vec4b[imgHeight * imgWidth]; ;
+        Vec3b[] videoSourceImageData = new Vec3b[imgHeight * imgWidth]; ;
         
         Parallel.For(0, imgHeight, i =>
         {
             for (var j = 0; j < imgWidth; j++)
             {
                 var col = c[j + i * imgWidth];
-                var vec3 = new Vec4b
+                var vec3 = new Vec3b
                 {
                     Item0 = col.b,
                     Item1 = col.g,
-                    Item2 = col.r,
-                    Item3 = col.a
+                    Item2 = col.r
                 };
 
                 videoSourceImageData[j + i * imgWidth] = vec3;
-                //Debug.Log(videoSourceImageData[x + i * imgWidth] + " " + vec3 + col);
             }
         });
 
-        Mat mat = new Mat(imgHeight, imgWidth, MatType.CV_8UC4);
+        Mat mat = new Mat(imgHeight, imgWidth, MatType.CV_8UC3);
 
-        Debug.Log(mat.Width);
         mat.SetArray(videoSourceImageData);
-        Debug.Log(c[600]);
-        Debug.Log(videoSourceImageData[600]);
-
-
 
         Cv2.Flip(mat, mat, FlipMode.X);
 
@@ -132,7 +141,7 @@ public class GameManager : MonoBehaviour
         int imgHeight = sourceMat.Height;
         int imgWidth = sourceMat.Width;
 
-        Vec4b[] matData = new Vec4b[imgHeight * imgWidth];
+        Vec3b[] matData = new Vec3b[imgHeight * imgWidth];
 
         sourceMat.GetArray(out matData);
 
@@ -146,18 +155,15 @@ public class GameManager : MonoBehaviour
                      r = matData[x + i * imgWidth].Item2,
                      g = matData[x + i * imgWidth].Item1,
                      b = matData[x + i * imgWidth].Item0,
-                     a = matData[x + i * imgWidth].Item3
+                     a = 255
                  };
                  c[x + i * imgWidth] = color32;
              }
          });
 
-         Texture2D tex = new Texture2D(imgWidth, imgHeight, TextureFormat.RGBA32, true, true);
+         Texture2D tex = new Texture2D(imgWidth, imgHeight, TextureFormat.RGB24, false);
          tex.SetPixels32(c);
          tex.Apply();
-
-        Debug.Log(c[600]);
-        Debug.Log(matData[600]);
 
         return tex;
     }
@@ -165,11 +171,15 @@ public class GameManager : MonoBehaviour
 
     public Texture2D WebcamToTexture2D(WebCamTexture sourceCam)
     {
-        Texture2D _Texture = new Texture2D(sourceCam.width, sourceCam.height);
+        Texture2D _Texture = new Texture2D(sourceCam.width, sourceCam.height, TextureFormat.RGB24, false);
         _Texture.SetPixels32(sourceCam.GetPixels32());
         _Texture.Apply();
         return _Texture;
     }
+    #endregion
+    #endregion
+
+    #region "Switchers"
 
     public bool CanEyeTracking()
     {
@@ -190,5 +200,16 @@ public class GameManager : MonoBehaviour
     {
         _canDevelopeMode = value;
     }
+
+    public bool isWebcamFliped()
+    {
+        return _flipWebCam;
+    }
+
+    public void SetWebcamFlip(bool value)
+    {
+        _flipWebCam = value;
+    }
+    #endregion
 
 }
