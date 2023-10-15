@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CamMovement : MonoBehaviour
 {
-    int X, Y, Z;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -14,6 +14,7 @@ public class CamMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-     gameObject.transform.position = new Vector3(X, Y, Z);    
+
+     gameObject.transform.position = new Vector3();    
     }
 }

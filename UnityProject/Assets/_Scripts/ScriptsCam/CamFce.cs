@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using OpenCvSharp;
 using Unity.VisualScripting;
+using UnityEngine.XR;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class CamFce : MonoBehaviour
 {
@@ -15,10 +17,13 @@ public class CamFce : MonoBehaviour
     int AltoCam = 0;
     int AnchoCam = 0;
 
+    public int X, Y, Z;
+
+    Window a;
     // Start is called before the first frame update
     void Start()
     {
-
+        a = new Window("capturawebcam");
 
         faceCascade.Load(Application.dataPath + "/haarcascades/haarcascade_frontalface_default.xml");
         eyeCascade.Load(Application.dataPath + "/haarcascades/haarcascade_eye.xml");
@@ -47,32 +52,39 @@ public class CamFce : MonoBehaviour
         SaveTextureAsPNG(text, Application.dataPath, wct);
 
         using var src = new Mat(Application.dataPath + "textura.png", ImreadModes.Grayscale);
+        Cv2.Flip(src, src, FlipMode.Y);
         using var dst = new Mat();
 
-
-
+        
         var faces = faceCascade.DetectMultiScale(src, 1.3, 5);
         foreach (var face in faces)
         {
 
-
-
-            Debug.Log(face.Location+" "+face.Height);
-
-
-
+            X = face.Left + face.Width / 2; 
+            X = X - wct.width / 2;
+            Y = face.Top + face.Height / 2;
+            Y = Y - wct.height / 2;
+            Z = face.Height;
+            Y = -Y;
+            
+            
+            Point centro = new Point(face.Left + face.Width / 2, face.Top + face.Height / 2);
+            Scalar color = new Scalar(0, 0, 255);
+            Cv2.Circle(src, centro, 1, color, 5);
         }
-
-       
+        
         
 
+        //gameObject.transform.position = new Vector3(0+X / 30, 0+Y / 30, 0 + Z / 30);
+        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, new Vector3(0 + X / 30, 0 + Y / 30, 0 + Z / 30), 0.3f);
 
 
-       
 
+        a.ShowImage(src);
     }
     void OnDestroy()
     {
+        a.Close();
         if (wct != null)
         {
             wct.Stop();
