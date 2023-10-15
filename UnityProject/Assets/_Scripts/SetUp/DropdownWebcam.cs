@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class DropdownWebcam : MonoBehaviour
@@ -10,6 +11,7 @@ public class DropdownWebcam : MonoBehaviour
     private bool _wasOpened = false;
     private string _text;
     private string _none = "(none)";
+    [SerializeField] private Button _button;
 
     // Start is called before the first frame update
     void Awake()
@@ -26,11 +28,13 @@ public class DropdownWebcam : MonoBehaviour
         {
             _text = _none;
             _dropdown.captionText.text = _none;
+            _button.interactable = false;
         }
         else
         {
             _text = GameManager.Instance.GetWebcam().deviceName;
             _dropdown.captionText.text = GameManager.Instance.GetWebcam().deviceName;
+            _button.interactable = true;
         }
 
     }
@@ -42,10 +46,11 @@ public class DropdownWebcam : MonoBehaviour
         {
             if (_wasOpened == true && _dropdown.value != 0)
                 SetCamera();
-            else if(_dropdown.value == 0)
+            else if (_dropdown.value == 0)
+            {
                 GameManager.Instance.StopWebcam();
-
-
+                _button.interactable = false;
+            }
             _wasOpened = _dropdown.IsExpanded;
             return;
         }
@@ -60,6 +65,8 @@ public class DropdownWebcam : MonoBehaviour
         webcamTexture.deviceName = _dropdown.captionText.text;
 
         GameManager.Instance.SetWebcam(webcamTexture);
+
+        _button.interactable = true;
     }
 
     void SetNewList()

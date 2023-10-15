@@ -352,7 +352,9 @@ public class GameManager : MonoBehaviour
 
     void OnDestroy()
     {
-        a.Close();
+        if(a != null)
+            a.Close();
+
         if (GameManager.Instance.GetWebcam() != null)
         {
             GameManager.Instance.GetWebcam().Stop();
