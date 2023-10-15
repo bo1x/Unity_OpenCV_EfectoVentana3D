@@ -29,6 +29,17 @@ public class GameManager : MonoBehaviour
     Vec3b[] matData;
     Texture2D tex;
 
+    //Face Detector
+    CascadeClassifier faceCascade = new CascadeClassifier();
+    CascadeClassifier eyeCascade = new CascadeClassifier();
+    bool imageHaveFace = false;
+    Mat faceMat;
+    float offsetFace = 14;
+    OpenCvSharp.Rect lastFace;
+    Window a;
+
+    public int X, Y, Z;
+
     private void Awake()
     {
         if(Instance != null && Instance != this)
@@ -43,6 +54,34 @@ public class GameManager : MonoBehaviour
 
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = _targetFrameRate;
+
+
+        debugWindow();
+        faceCascade.Load(Application.dataPath + "/haarcascades/haarcascade_frontalface_default.xml");
+        eyeCascade.Load(Application.dataPath + "/haarcascades/haarcascade_eye.xml");
+    }
+
+    private void Update()
+    {
+
+        debugWindow();
+    }
+
+
+    private void debugWindow()
+    {
+        if (CanDevelopeMode())
+        {
+            if (a == null)
+                a = new Window("capturawebcam");
+
+            a.ShowImage(OpenCVFace());
+        }
+        else if (CanDevelopeMode() == false && a != null)
+        {
+            a.Close();
+            a = null;
+        }
     }
 
     #region Webcam
@@ -137,6 +176,54 @@ public class GameManager : MonoBehaviour
             Cv2.Flip(mat, mat, FlipMode.Y);
 
         return mat;
+    }
+
+    public Mat OpenCVFace()
+    {
+        if (_webcam == null)
+            return null;
+
+        if (!_webcam.didUpdateThisFrame)
+            return null;
+
+        faceMat = WebCamMat();
+        var faces = faceCascade.DetectMultiScale(faceMat, 1.3, 5);
+
+        imageHaveFace = faces.Length == 0 ? false : true;
+
+        if(!imageHaveFace)
+            return faceMat;
+
+        if (faces.Length > 1)
+            Debug.Log(faces.Length);
+
+        foreach (OpenCvSharp.Rect face in faces)
+        {
+            if (faces.Length == 1)
+                lastFace = face;
+
+
+            Debug.Log(face.Top);
+
+            if (faces.Length == 1 || face.Top < lastFace.Top + offsetFace && face.Top > lastFace.Top - offsetFace && face.Left < lastFace.Left + offsetFace && face.Left > lastFace.Left - offsetFace)
+            {
+
+                X = face.Left + face.Width / 2;
+                X = X - GetWebcam().width / 2;
+                Y = face.Top + face.Height / 2;
+                Y = Y - GetWebcam().height / 2;
+                Z = face.Height;
+                Y = -Y;
+
+
+                Point centro = new Point(face.Left + face.Width / 2, face.Top + face.Height / 2);
+                Scalar color = new Scalar(0, 0, 255);
+                Cv2.Circle(faceMat, centro, 1, color, 5);
+                Cv2.Rectangle(faceMat, face.TopLeft, face.BottomRight, new Scalar(0, 255, 0), 2);
+            }
+        }
+
+        return faceMat;
     }
 
     #region Conversiones entre imagenes
@@ -262,4 +349,13 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+
+    void OnDestroy()
+    {
+        a.Close();
+        if (GameManager.Instance.GetWebcam() != null)
+        {
+            GameManager.Instance.GetWebcam().Stop();
+        }
+    }
 }

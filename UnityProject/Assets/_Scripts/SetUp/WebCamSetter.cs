@@ -15,13 +15,25 @@ public class WebCamSetter : MonoBehaviour
 
     Mat _cameraMat;
 
+    RectTransform rect;
+
+    float rectWidth;
+
+    [SerializeField] private GameObject background;
+
     // Start is called before the first frame update
     void Awake()
     {
-        GameManager.Instance.CanShowWebcam(false);
+        rect = gameObject.GetComponent<RectTransform>();
         _image = GetComponent<Image>();
         _image.enabled = false;
         _image.material.mainTexture = _material;
+        rectWidth = rect.sizeDelta.x;
+    }
+
+    private void Start()
+    {
+        GameManager.Instance.CanShowWebcam(false);
     }
 
     // Update is called once per frame
@@ -31,6 +43,7 @@ public class WebCamSetter : MonoBehaviour
         {
             if (GameManager.Instance.GetWebcam() == null)
             {
+                background.SetActive(false);
                 _webcamName = null;
                 _image.material.mainTexture = null;
                 _image.color = new Vector4(1, 1, 1, 0);
@@ -47,8 +60,10 @@ public class WebCamSetter : MonoBehaviour
         if (GameManager.Instance.GetWebcam().didUpdateThisFrame && GameManager.Instance.CanShowWebcam())
         {
             //_image.material.mainTexture = GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam());
-            _cameraMat = GameManager.Instance.WebCamMat();
+            _cameraMat = GameManager.Instance.OpenCVFace();
             _material = GameManager.Instance.MatToTexture(_cameraMat);
+            rect.sizeDelta = new Vector2(Mathf.Clamp(((rect.sizeDelta.y * _cameraMat.Width) / _cameraMat.Height),0,rectWidth), rect.sizeDelta.y);
+            background.SetActive(true);
             _image.material.mainTexture = _material;
             Debug.Log(GameManager.Instance.GetWebcam().requestedFPS + " " + GameManager.Instance.GetWebcam().requestedWidth + " " + GameManager.Instance.GetWebcam().requestedHeight);
             _image.SetMaterialDirty();
