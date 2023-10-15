@@ -2,19 +2,31 @@ using OpenCvSharp;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.Diagnostics;
 
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
     private WebCamTexture _webcam;
+    private bool _flipWebCam = true;
+    private int requestedFps = 30;
+    private Vector2Int requestSize = new Vector2Int(640, 360);
+
     private bool _canEyeTracking;
     private bool _canDevelopeMode;
-    private bool _flipWebCam = true;
 
-    private int _targetFrameRate = 60;
+    private int _targetFrameRate = 30;
+
+    Color32[] c;
+    Vec3b[] videoSourceImageData;
+    Mat mat;
+    Vec3b[] matData;
+    Texture2D tex;
 
     private void Awake()
     {
@@ -46,7 +58,7 @@ public class GameManager : MonoBehaviour
 
         _webcam = actualWebcam;
 
-        GameManager.Instance.WebCamConstructor(30, 640, 360);
+        GameManager.Instance.WebCamConstructor(requestedFps, requestSize.x, requestSize.y);
         _webcam.Play();
     }
 
@@ -68,14 +80,33 @@ public class GameManager : MonoBehaviour
 
 
     public void WebCamConstructor(int fps, int width, int height) {
-        _webcam.requestedFPS = fps;
-        _webcam.requestedHeight = height;
-        _webcam.requestedWidth = width;
+        requestedFps = fps;
+        requestSize = new Vector2Int(width, height);
+        
+        if (_webcam == null)
+        {
+            return;
+        }
+        _webcam.requestedFPS = requestedFps;
+        _webcam.requestedHeight = requestSize.x;
+        _webcam.requestedWidth = requestSize.y;
+        _webcam.Stop();
+        _webcam.Play();
     }
 
     public WebCamTexture GetWebcam()
     {
         return _webcam;
+    }
+
+    public int RequestedFps()
+    {
+        return requestedFps;
+    }
+
+    public Vector2Int RequestedSize()
+    {
+        return requestSize;
     }
     #endregion
 
@@ -103,33 +134,35 @@ public class GameManager : MonoBehaviour
         int imgHeight = sourceTexture.height;
         int imgWidth = sourceTexture.width;
 
-        Color32[] c = sourceTexture.GetPixels32();
+        c = sourceTexture.GetPixels32();
 
-        byte[] matData = new byte[imgHeight * imgWidth];
-        Vec3b[] videoSourceImageData = new Vec3b[imgHeight * imgWidth]; ;
+        GCHandle gcBitsHandle = GCHandle.Alloc(c, GCHandleType.Pinned);
+
+        videoSourceImageData = new Vec3b[imgHeight * imgWidth]; ;
         
         Parallel.For(0, imgHeight, i =>
         {
             for (var j = 0; j < imgWidth; j++)
             {
-                var col = c[j + i * imgWidth];
-                var vec3 = new Vec3b
+                Vec3b vec3 = new Vec3b
                 {
-                    Item0 = col.b,
-                    Item1 = col.g,
-                    Item2 = col.r
+                    Item0 = c[j + i * imgWidth].b,
+                    Item1 = c[j + i * imgWidth].g,
+                    Item2 = c[j + i * imgWidth].r
                 };
 
                 videoSourceImageData[j + i * imgWidth] = vec3;
             }
         });
 
-        Mat mat = new Mat(imgHeight, imgWidth, MatType.CV_8UC3);
+        mat = new Mat(imgHeight, imgWidth, MatType.CV_8UC3);
 
         mat.SetArray(videoSourceImageData);
-
+        GCHandle gcMatsHandle = GCHandle.Alloc(mat, GCHandleType.Pinned);
         Cv2.Flip(mat, mat, FlipMode.X);
 
+        gcMatsHandle.Free();
+        gcBitsHandle.Free();
         return mat;
     }
         
@@ -138,33 +171,38 @@ public class GameManager : MonoBehaviour
     {
         Cv2.Flip(sourceMat, sourceMat, FlipMode.X);
 
-        int imgHeight = sourceMat.Height;
-        int imgWidth = sourceMat.Width;
-
-        Vec3b[] matData = new Vec3b[imgHeight * imgWidth];
+        matData = new Vec3b[sourceMat.Height * sourceMat.Width];
 
         sourceMat.GetArray(out matData);
 
-        Color32[] c = new Color32[imgHeight * imgWidth];
+         c = new Color32[sourceMat.Height * sourceMat.Width];
 
-         Parallel.For(0, imgHeight, i => {
-             for (var x = 0; x < imgWidth; x++)
+         Parallel.For(0, sourceMat.Height, i => {
+             for (var x = 0; x < sourceMat.Width; x++)
              {
-                 var color32 = new Color32
+                 Color32 color32 = new Color32
                  {
-                     r = matData[x + i * imgWidth].Item2,
-                     g = matData[x + i * imgWidth].Item1,
-                     b = matData[x + i * imgWidth].Item0,
+                     r = matData[x + i * sourceMat.Width].Item2,
+                     g = matData[x + i * sourceMat.Width].Item1,
+                     b = matData[x + i * sourceMat.Width].Item0,
                      a = 255
                  };
-                 c[x + i * imgWidth] = color32;
+                 c[x + i * sourceMat.Width] = color32;
              }
          });
 
-         Texture2D tex = new Texture2D(imgWidth, imgHeight, TextureFormat.RGB24, false);
+         tex = new Texture2D(sourceMat.Width, sourceMat.Height, TextureFormat.RGB24, false);
          tex.SetPixels32(c);
          tex.Apply();
+        GCHandle gcBitsHandle = GCHandle.Alloc(c, GCHandleType.Pinned);
+        GCHandle gcMatsHandle = GCHandle.Alloc(mat, GCHandleType.Pinned);
+        GCHandle gcVec3bHandle = GCHandle.Alloc(matData, GCHandleType.Pinned);
+        GCHandle gcTexture = GCHandle.Alloc(tex, GCHandleType.Pinned);
 
+        gcTexture.Free();
+        gcVec3bHandle.Free();
+        gcMatsHandle.Free();
+        gcBitsHandle.Free();
         return tex;
     }
 

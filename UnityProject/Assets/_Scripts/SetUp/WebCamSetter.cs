@@ -13,11 +13,13 @@ public class WebCamSetter : MonoBehaviour
 
     public float durationLerp;
 
+    Mat _cameraMat;
     // Start is called before the first frame update
     void Awake()
     {
         _image = GetComponent<Image>();
         _image.enabled = false;
+        _image.material.mainTexture = _material;
     }
 
     // Update is called once per frame
@@ -43,7 +45,10 @@ public class WebCamSetter : MonoBehaviour
         if (GameManager.Instance.GetWebcam().didUpdateThisFrame)
         {
             //_image.material.mainTexture = GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam());
-            _image.material.mainTexture = GameManager.Instance.MatToTexture(GameManager.Instance.WebCamMat());
+            _cameraMat = GameManager.Instance.WebCamMat();
+            _material = GameManager.Instance.MatToTexture(_cameraMat);
+            _image.material.mainTexture = _material;
+            Debug.Log(GameManager.Instance.GetWebcam().requestedFPS + " " + GameManager.Instance.GetWebcam().requestedWidth + " " + GameManager.Instance.GetWebcam().requestedHeight);
             _image.SetMaterialDirty();
         }
         _webcamName = GameManager.Instance.GetWebcam().deviceName;
