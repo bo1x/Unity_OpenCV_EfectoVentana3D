@@ -9,6 +9,7 @@ public class DropdownWebcam : MonoBehaviour
     private int _realValue;
     private bool _wasOpened = false;
     private string _text;
+    private string _none = "(none)";
 
     // Start is called before the first frame update
     void Awake()
@@ -23,8 +24,8 @@ public class DropdownWebcam : MonoBehaviour
     {
         if(GameManager.Instance.GetWebcam() == null)
         {
-            _text = "(none)";
-            _dropdown.captionText.text = "(none)";
+            _text = _none;
+            _dropdown.captionText.text = _none;
         }
         else
         {
@@ -76,7 +77,7 @@ public class DropdownWebcam : MonoBehaviour
         for (int i = 0; i < devices.Length; i++)
             deviceList.Add(devices[i].name);
 
-        _dropdown.options.Add(new TMP_Dropdown.OptionData() { text = "(none)" });
+        _dropdown.options.Add(new TMP_Dropdown.OptionData() { text = _none });
 
         foreach (string t in deviceList)
         {

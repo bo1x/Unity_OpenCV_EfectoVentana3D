@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private WebCamTexture _webcam;
     private bool _flipWebCam = true;
     private int requestedFps = 30;
+    private bool showWebcam = false;
     private Vector2Int requestSize = new Vector2Int(640, 360);
 
     private bool _canEyeTracking;
@@ -107,6 +108,17 @@ public class GameManager : MonoBehaviour
     public Vector2Int RequestedSize()
     {
         return requestSize;
+    }
+
+    public bool CanShowWebcam()
+    {
+        return showWebcam;
+    }
+
+    public void CanShowWebcam(bool value)
+    {
+        showWebcam = value;
+        return;
     }
     #endregion
 

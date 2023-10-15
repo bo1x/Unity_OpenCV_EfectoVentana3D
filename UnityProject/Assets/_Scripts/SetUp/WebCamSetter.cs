@@ -14,9 +14,11 @@ public class WebCamSetter : MonoBehaviour
     public float durationLerp;
 
     Mat _cameraMat;
+
     // Start is called before the first frame update
     void Awake()
     {
+        GameManager.Instance.CanShowWebcam(false);
         _image = GetComponent<Image>();
         _image.enabled = false;
         _image.material.mainTexture = _material;
@@ -42,7 +44,7 @@ public class WebCamSetter : MonoBehaviour
         _image.enabled = true;
 
         //Cv2.ImWrite(Application.dataPath + "ImagenFinal.jpg", GameManager.Instance.WebCamMat());
-        if (GameManager.Instance.GetWebcam().didUpdateThisFrame)
+        if (GameManager.Instance.GetWebcam().didUpdateThisFrame && GameManager.Instance.CanShowWebcam())
         {
             //_image.material.mainTexture = GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam());
             _cameraMat = GameManager.Instance.WebCamMat();
@@ -53,7 +55,7 @@ public class WebCamSetter : MonoBehaviour
         }
         _webcamName = GameManager.Instance.GetWebcam().deviceName;
 
-        if (_image.color.a == 0)
+        if (_image.color.a == 0 && GameManager.Instance.CanShowWebcam())
             StartCoroutine(AnimateOpacity());
     }
 
