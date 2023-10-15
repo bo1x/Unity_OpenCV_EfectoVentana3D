@@ -5,6 +5,7 @@ using OpenCvSharp;
 using Unity.VisualScripting;
 using UnityEngine.XR;
 using static UnityEngine.EventSystems.EventTrigger;
+using System;
 
 public class CamFce : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class CamFce : MonoBehaviour
     public int X, Y, Z;
 
     Window a;
+
+    public GameObject objetoMirar;
     // Start is called before the first frame update
     void Start()
     {
@@ -77,6 +80,7 @@ public class CamFce : MonoBehaviour
 
         //gameObject.transform.position = new Vector3(0+X / 30, 0+Y / 30, 0 + Z / 30);
         gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, new Vector3(0 + X / 30, 0 + Y / 30, 0 + Z / 30), 0.3f);
+        gameObject.transform.LookAt(objetoMirar.transform);
 
 
 

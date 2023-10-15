@@ -15,7 +15,7 @@ public class AlwaysLookObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gameObject.transform.LookAt(objeto.transform);   
+       // gameObject.transform.LookAt(objeto.transform);   
 
     }
 }
