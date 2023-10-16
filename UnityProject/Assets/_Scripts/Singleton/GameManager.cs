@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Diagnostics;
-
+using UnityEngine.Scripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,12 +18,12 @@ public class GameManager : MonoBehaviour
     private bool _flipWebCam = true;
     private int requestedFps = 30;
     private Coroutine loading;
-    private float minLoadTime = 2;
+    private float minLoadTime = 1.6f;
     private bool isLoading = false;
 
-
+    [SerializeField] private GameObject _loading;
     [SerializeField]private Image _FadeImage;
-    private float _fadeTime = 0.4f;
+    private float _fadeTime = 0.2f;
     private bool showWebcam = false;
     private Vector2Int requestSize = new Vector2Int(640, 360);
 
@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = _targetFrameRate;
         _FadeImage.gameObject.SetActive(false);
-
+        _loading.SetActive(false);
 
         debugWindow();
         faceCascade.Load(Application.dataPath + "/haarcascades/haarcascade_frontalface_default.xml");
@@ -120,6 +120,7 @@ public class GameManager : MonoBehaviour
     IEnumerator LoadLevelASync(string levelToLoad)
     {
         isLoading = true;
+        _loading.transform.parent.gameObject.SetActive(true);
 
         _FadeImage.gameObject.SetActive(true);
         _FadeImage.canvasRenderer.SetAlpha(0);
@@ -128,6 +129,7 @@ public class GameManager : MonoBehaviour
         while (!Fade(1))
             yield return null;
 
+        _loading.SetActive(true);
 
         while (!Fade(0))
             yield return null;
@@ -136,6 +138,8 @@ public class GameManager : MonoBehaviour
 
         if(_webcam != null)
             _webcam.Stop();
+
+        System.GC.Collect();
 
         float progressValue = 0f;
 
@@ -157,9 +161,12 @@ public class GameManager : MonoBehaviour
         while (!Fade(1))
             yield return null;
 
+        _loading.SetActive(false);
+
         while (!Fade(0))
             yield return null;
 
+        _loading.transform.parent.gameObject.SetActive(false);
         isLoading = false;
 
         yield return null;
