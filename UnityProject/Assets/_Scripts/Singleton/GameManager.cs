@@ -292,6 +292,7 @@ public class GameManager : MonoBehaviour
 
     public Mat OpenCVFace()
     {
+        int ojos = 0;
         if (_webcam == null)
             return null;
 
@@ -300,7 +301,7 @@ public class GameManager : MonoBehaviour
 
         faceMat = WebCamMat();
         var faces = faceCascade.DetectMultiScale(faceMat, 1.3, 5);
-
+        var eyes = eyeCascade.DetectMultiScale(faceMat, 1.3, 20);
         imageHaveFace = faces.Length == 0 ? false : true;
 
         if(!imageHaveFace)
@@ -315,7 +316,7 @@ public class GameManager : MonoBehaviour
                 lastFace = face;
 
 
-            Debug.Log(face.Top);
+          //  Debug.Log(face.Top);
 
             if (faces.Length == 1 || face.Top < lastFace.Top + offsetFace && face.Top > lastFace.Top - offsetFace && face.Left < lastFace.Left + offsetFace && face.Left > lastFace.Left - offsetFace)
             {
@@ -327,12 +328,21 @@ public class GameManager : MonoBehaviour
                 Z = face.Height;
                 Y = -Y;
 
+                foreach (OpenCvSharp.Rect eye in eyes)
+                {
+                    ojos++;
+                    Point centroojo = new Point(eye.Left + eye.Width / 2, eye.Top + eye.Height / 2);
+                    Scalar colorojo = new Scalar(0, 0, 255);
+                    Cv2.Circle(faceMat, centroojo, 1, colorojo, 2);
+                }
 
                 Point centro = new Point(face.Left + face.Width / 2, face.Top + face.Height / 2);
                 Scalar color = new Scalar(0, 0, 255);
                 Cv2.Circle(faceMat, centro, 1, color, 5);
                 Cv2.Rectangle(faceMat, face.TopLeft, face.BottomRight, new Scalar(0, 255, 0), 2);
             }
+            Debug.Log(ojos);
+            
         }
 
         return faceMat;
