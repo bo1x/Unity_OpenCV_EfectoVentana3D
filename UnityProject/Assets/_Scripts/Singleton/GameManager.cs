@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject pauseprefab;
     private GameObject _pauseObject;
-    private bool pause;
+    private bool pause = false;
+    private int DropDownWebcam;
 
     [SerializeField] private GameObject _loading;
     [SerializeField]private Image _FadeImage;
@@ -67,6 +68,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(this);
         }
+
 
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = _targetFrameRate;
@@ -141,8 +143,12 @@ public class GameManager : MonoBehaviour
 
         while (!Fade(0))
             yield return null;
+        
+        if(levelToLoad == "Game")
+            pauseprefab.SetActive(true);
 
         AsyncOperation loadOperation = SceneManager.LoadSceneAsync(levelToLoad);
+
 
         if(_webcam != null)
             _webcam.Stop();
@@ -165,6 +171,8 @@ public class GameManager : MonoBehaviour
             progressValue += Time.deltaTime;
             yield return null;
         }
+
+        pauseprefab.SetActive(false);
 
         while (!Fade(1))
             yield return null;
@@ -202,19 +210,14 @@ public class GameManager : MonoBehaviour
         if (pause && value == false)
         {
             pause = false;
-
-            if (_pauseObject != null)
-            {
-                Destroy(_pauseObject);
-                _pauseObject = null;
-            }
+            pauseprefab.SetActive(false);
             return;
         }
         else if (value == false)
             return;
 
         pause = true;
-        _pauseObject = Instantiate(pauseprefab);
+        pauseprefab.SetActive(true);
 
     }
 
@@ -304,6 +307,16 @@ public class GameManager : MonoBehaviour
     public Vector3 GetSensibility()
     {
         return _sensibility;
+    }
+
+    public void setdropdown(int value)
+    {
+        DropDownWebcam = value;
+        return;
+    }
+    public int whatdropdown()
+    {
+        return DropDownWebcam;
     }
 
     public void SetSensibility(float value)

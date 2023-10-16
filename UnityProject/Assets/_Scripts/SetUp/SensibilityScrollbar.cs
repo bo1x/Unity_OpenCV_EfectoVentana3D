@@ -11,11 +11,15 @@ public class SensibilityScrollbar : MonoBehaviour
     private void Awake()
     {
         _scrollbar = gameObject.GetComponent<Scrollbar>();
-        _scrollbar.value = (GameManager.Instance.GetSensibility().x - 10) / 40;
+    }
+
+    private void Start()
+    {
+        _scrollbar.value = Mathf.Abs(((GameManager.Instance.GetSensibility().x - 10) / 40) - 1);
     }
 
     public void onchange()
     {
-        GameManager.Instance.SetSensibility((_scrollbar.value * 40) + 10);
+        GameManager.Instance.SetSensibility((Mathf.Abs((_scrollbar.value - 1)) * 40) + 10);
     }
 }
