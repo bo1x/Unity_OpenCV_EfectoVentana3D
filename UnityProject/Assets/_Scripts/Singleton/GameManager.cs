@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
 
 
     [SerializeField]private Image _FadeImage;
-    private float _fadeTime = 0.1f;
+    private float _fadeTime = 0.4f;
     private bool showWebcam = false;
     private Vector2Int requestSize = new Vector2Int(640, 360);
 
@@ -124,6 +124,7 @@ public class GameManager : MonoBehaviour
         _FadeImage.gameObject.SetActive(true);
         _FadeImage.canvasRenderer.SetAlpha(0);
 
+
         while (!Fade(1))
             yield return null;
 
@@ -133,7 +134,9 @@ public class GameManager : MonoBehaviour
 
         AsyncOperation loadOperation = SceneManager.LoadSceneAsync(levelToLoad);
 
-        _webcam.Stop();
+        if(_webcam != null)
+            _webcam.Stop();
+
         float progressValue = 0f;
 
         while (!loadOperation.isDone)
@@ -142,7 +145,8 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        _webcam.Play();
+        if (_webcam != null)
+            _webcam.Play();
 
         while (progressValue < minLoadTime)
         {

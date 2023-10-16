@@ -31,5 +31,7 @@ public class FirstScene : MonoBehaviour
 
             yield return new WaitForSeconds(Time.fixedDeltaTime);
         }
+
+        GameManager.Instance.NextScene(0);
     }
 }
