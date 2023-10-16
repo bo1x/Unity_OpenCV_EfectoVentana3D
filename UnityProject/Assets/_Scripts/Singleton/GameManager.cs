@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     private bool _flipWebCam = true;
     private int requestedFps = 30;
     private Coroutine loading;
-    private float minLoadTime = 1.6f;
+    private float minLoadTime = 0.3f;
     private bool isLoading = false;
 
     [SerializeField] private GameObject _loading;

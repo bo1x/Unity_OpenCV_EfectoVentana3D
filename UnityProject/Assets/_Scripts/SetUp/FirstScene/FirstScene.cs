@@ -28,6 +28,10 @@ public class FirstScene : MonoBehaviour
                 endFade.color = new Color (endFade.color.r, endFade.color.g, endFade.color.b, 1 - (percent * 3.4f));
             StarAnimationObject.gameObject.transform.localScale = Vector2.one * size;
 
+            if (Input.anyKey)
+            {
+                break;
+            }
 
             yield return new WaitForSeconds(Time.fixedDeltaTime);
         }
