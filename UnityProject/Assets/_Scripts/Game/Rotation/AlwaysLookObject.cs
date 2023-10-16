@@ -7,8 +7,22 @@ public class AlwaysLookObject : MonoBehaviour
 {
     public GameObject objeto;
 
+    private Vector3 _Position;
+
+    private float maxnear = 2f;
+
+    private float x, y, z;
+
+    private void Awake()
+    {
+        _Position = gameObject.transform.position;
+    }
+
     private void FixedUpdate()
     {
+        if (GameManager.Instance.GetPause())
+            return;
+
         CameraRotate();
     }
 
@@ -16,7 +30,10 @@ public class AlwaysLookObject : MonoBehaviour
     {
         GameManager.Instance.OpenCVFace();
         Vector3 axis = GameManager.Instance.getOpenCVAxis();
-        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, new Vector3(0 + axis.x / 30, 0 + axis.y / 30, 0 + axis.z / 30), 0.3f);
+        x = _Position.x + axis.x / GameManager.Instance.GetSensibility().x;
+        y = _Position.y + axis.y / GameManager.Instance.GetSensibility().y;
+        z = GameManager.Instance.HaveAxisZ() ? Mathf.Clamp(_Position.z + axis.z / GameManager.Instance.GetSensibility().z, maxnear, Mathf.Infinity) : _Position.z;
+        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, new Vector3(x, y, z), 0.1f);
         gameObject.transform.LookAt(objeto.transform);
     }
 }

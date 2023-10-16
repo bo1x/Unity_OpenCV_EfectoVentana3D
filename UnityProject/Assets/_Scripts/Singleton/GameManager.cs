@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
     private float minLoadTime = 0.3f;
     private bool isLoading = false;
 
+    [SerializeField] private GameObject pauseprefab;
+    private GameObject _pauseObject;
+    private bool pause;
+
     [SerializeField] private GameObject _loading;
     [SerializeField]private Image _FadeImage;
     private float _fadeTime = 0.2f;
@@ -28,13 +32,16 @@ public class GameManager : MonoBehaviour
     private Vector2Int requestSize = new Vector2Int(640, 360);
 
     private bool _canEyeTracking;
+    private bool _moveAxisZ = true;
     private bool _canDevelopeMode;
+    private Vector3 _sensibility = Vector3.one * 30;
 
     private int _targetFrameRate = 30;
 
     Color32[] c;
     Vec3b[] videoSourceImageData;
     Mat mat;
+    Mat _webcamMat;
     Vec3b[] matData;
     Texture2D tex;
 
@@ -73,6 +80,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        WebCamCalling();
 
         debugWindow();
     }
@@ -184,6 +192,32 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    public bool GetPause()
+    {
+        return pause;
+    }
+
+    public void Pause(bool value)
+    {
+        if (pause && value == false)
+        {
+            pause = false;
+
+            if (_pauseObject != null)
+            {
+                Destroy(_pauseObject);
+                _pauseObject = null;
+            }
+            return;
+        }
+        else if (value == false)
+            return;
+
+        pause = true;
+        _pauseObject = Instantiate(pauseprefab);
+
+    }
+
     public bool GetLoad()
     {
         return isLoading;
@@ -234,10 +268,10 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
+        _webcam.Stop();
         _webcam.requestedFPS = requestedFps;
         _webcam.requestedHeight = requestSize.x;
         _webcam.requestedWidth = requestSize.y;
-        _webcam.Stop();
         _webcam.Play();
     }
 
@@ -267,6 +301,19 @@ public class GameManager : MonoBehaviour
         return;
     }
 
+    public Vector3 GetSensibility()
+    {
+        return _sensibility;
+    }
+
+    public void SetSensibility(float value)
+    {
+        _sensibility = Vector3.one * value;
+        return;
+    }
+
+
+
     public Vector3 getOpenCVAxis()
     {
         return new Vector3(X, Y, Z);
@@ -278,16 +325,7 @@ public class GameManager : MonoBehaviour
 
     public Mat WebCamMat()
     {
-        int imgHeight = _webcam.height;
-        int imgWidth = _webcam.width;
-
-        Mat mat = new Mat(imgHeight, imgWidth, MatType.CV_8UC4);
-        mat = TextureToMat(WebcamToTexture2D(_webcam));
-        
-        if(_flipWebCam)
-            Cv2.Flip(mat, mat, FlipMode.Y);
-
-        return mat;
+        return _webcamMat;
     }
 
     public Mat OpenCVFace()
@@ -336,6 +374,26 @@ public class GameManager : MonoBehaviour
         }
 
         return faceMat;
+    }
+
+    private Mat WebCamCalling()
+    {
+
+        if (_webcam == null)
+            return _webcamMat;
+
+        if (!_webcam.didUpdateThisFrame)
+            return _webcamMat;
+
+
+
+        _webcamMat = new Mat(_webcam.height, _webcam.width, MatType.CV_8UC4);
+        _webcamMat = TextureToMat(WebcamToTexture2D(_webcam));
+
+        if (_flipWebCam)
+            Cv2.Flip(mat, mat, FlipMode.Y);
+
+        return _webcamMat;
     }
 
     #region Conversiones entre imagenes
@@ -458,6 +516,16 @@ public class GameManager : MonoBehaviour
     public void SetWebcamFlip(bool value)
     {
         _flipWebCam = value;
+    }
+
+    public bool HaveAxisZ()
+    {
+        return _moveAxisZ;
+    }
+
+    public void HaveAxisZ(bool value)
+    {
+        _moveAxisZ = value;
     }
     #endregion
 

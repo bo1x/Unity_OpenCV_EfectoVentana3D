@@ -1,11 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DropDownFPS : DropDown
 {
     void Start()
     {
+        if(GameManager.Instance.GetWebcam() != null)
+            switch (GameManager.Instance.GetWebcam().requestedFPS)
+            {
+                case 15:
+                    dropDown.value = 0;
+                    break;
+                case 30:
+                    dropDown.value = 1;
+                    break;
+                case 60:
+                    dropDown.value = 2;
+                    break;
+            }
         OnChanged();
     }
     

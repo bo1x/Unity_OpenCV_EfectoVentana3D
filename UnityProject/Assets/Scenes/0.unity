@@ -1193,7 +1193,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_TargetDisplay: 0
 --- !u!1 &2014688267
 GameObject:
@@ -1504,6 +1504,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45dd7f0a4779222428c7655ef576a36d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pauseprefab: {fileID: 3378598794474519128, guid: d48a50eb8c05aa64abe90d81cb95617f,
+    type: 3}
   _loading: {fileID: 418131755}
   _FadeImage: {fileID: 1749855530}
   X: 0

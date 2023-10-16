@@ -16,16 +16,27 @@ public class DropdownWebcam : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        _realValue = 0;
         _dropdown = GetComponent<TMP_Dropdown>();
-
         SetNewList();
+        if (GameManager.Instance.GetWebcam() != null)
+        {
+            int value = 0;
+            foreach (var myoptiondata in _dropdown.options)
+            {
+                if (myoptiondata.text == GameManager.Instance.GetWebcam().deviceName)
+                    _dropdown.value = value;
+
+                value++;
+            }
+            _realValue = _dropdown.value;
+        }
     }
 
     private void Start()
     {
         if(GameManager.Instance.GetWebcam() == null)
         {
+            _realValue = 0;
             _text = _none;
             _dropdown.captionText.text = _none;
             _button.interactable = false;
