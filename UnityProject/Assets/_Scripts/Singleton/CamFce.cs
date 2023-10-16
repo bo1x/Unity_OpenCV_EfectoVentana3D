@@ -6,6 +6,8 @@ using Unity.VisualScripting;
 using UnityEngine.XR;
 using static UnityEngine.EventSystems.EventTrigger;
 
+//Obsoleto no se usa ya este script
+
 public class CamFce : MonoBehaviour
 {
     public WebCamTexture wct;

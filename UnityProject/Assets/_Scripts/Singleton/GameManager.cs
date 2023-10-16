@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using UnityEditor.Playables;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.Diagnostics;
 
 
@@ -15,6 +17,13 @@ public class GameManager : MonoBehaviour
     private WebCamTexture _webcam;
     private bool _flipWebCam = true;
     private int requestedFps = 30;
+    private Coroutine loading;
+    private float minLoadTime = 2;
+    private bool isLoading = false;
+
+
+    [SerializeField]private Image _FadeImage;
+    private float _fadeTime = 0.1f;
     private bool showWebcam = false;
     private Vector2Int requestSize = new Vector2Int(640, 360);
 
@@ -54,6 +63,7 @@ public class GameManager : MonoBehaviour
 
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = _targetFrameRate;
+        _FadeImage.gameObject.SetActive(false);
 
 
         debugWindow();
@@ -83,6 +93,92 @@ public class GameManager : MonoBehaviour
             a = null;
         }
     }
+
+    #region SceneManager
+
+    public void NextScene(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                LoadLevelUI("ConfigurationScene");
+                break;
+            case 1:
+                LoadLevelUI("Game");
+                break;
+            default:
+                Debug.LogWarning("Esta escena no se reconoce");
+                break;
+        }
+    }
+
+    public void LoadLevelUI(string levelToLoad)
+    {
+        loading = StartCoroutine(LoadLevelASync(levelToLoad));
+    }
+
+    IEnumerator LoadLevelASync(string levelToLoad)
+    {
+        isLoading = true;
+
+        _FadeImage.gameObject.SetActive(true);
+        _FadeImage.canvasRenderer.SetAlpha(0);
+
+        while (!Fade(1))
+            yield return null;
+
+
+        while (!Fade(0))
+            yield return null;
+
+        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(levelToLoad);
+
+        _webcam.Stop();
+        float progressValue = 0f;
+
+        while (!loadOperation.isDone)
+        {
+            progressValue += Time.deltaTime;
+            yield return null;
+        }
+
+        _webcam.Play();
+
+        while (progressValue < minLoadTime)
+        {
+            progressValue += Time.deltaTime;
+            yield return null;
+        }
+
+        while (!Fade(1))
+            yield return null;
+
+        while (!Fade(0))
+            yield return null;
+
+        isLoading = false;
+
+        yield return null;
+    }
+
+    private bool Fade(float target)
+    {
+        _FadeImage.CrossFadeAlpha(target, _fadeTime, true);
+
+        if(Mathf.Abs(_FadeImage.canvasRenderer.GetAlpha() - target) <= 0.05f){
+            _FadeImage.canvasRenderer.SetAlpha(target);
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool GetLoad()
+    {
+        return isLoading;
+    }
+
+    #endregion
 
     #region Webcam
 
@@ -158,6 +254,11 @@ public class GameManager : MonoBehaviour
     {
         showWebcam = value;
         return;
+    }
+
+    public Vector3 getOpenCVAxis()
+    {
+        return new Vector3(X, Y, Z);
     }
     #endregion
 

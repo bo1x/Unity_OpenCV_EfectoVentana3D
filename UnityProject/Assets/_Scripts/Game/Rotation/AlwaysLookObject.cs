@@ -6,16 +6,17 @@ using UnityEngine;
 public class AlwaysLookObject : MonoBehaviour
 {
     public GameObject objeto;
-    // Start is called before the first frame update
-    void Start()
+
+    private void FixedUpdate()
     {
-        
+        CameraRotate();
     }
 
-    // Update is called once per frame
-    void Update()
+    void CameraRotate()
     {
-        gameObject.transform.LookAt(objeto.transform);   
-
+        GameManager.Instance.OpenCVFace();
+        Vector3 axis = GameManager.Instance.getOpenCVAxis();
+        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, new Vector3(0 + axis.x / 30, 0 + axis.y / 30, 0 + axis.z / 30), 0.3f);
+        gameObject.transform.LookAt(objeto.transform);
     }
 }
