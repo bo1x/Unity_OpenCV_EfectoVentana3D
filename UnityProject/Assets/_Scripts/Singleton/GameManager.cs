@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     private bool _canEyeTracking;
     private bool _moveAxisZ = true;
     private bool _canDevelopeMode;
-    private Vector3 _sensibility = Vector3.one * 30;
+    private Vector3 _sensibility = Vector3.one * 50;
 
     private int _targetFrameRate = 30;
 
@@ -87,6 +87,8 @@ public class GameManager : MonoBehaviour
     {
         WebCamCalling();
 
+        OpenCVFace();
+
         debugWindow();
     }
 
@@ -98,7 +100,7 @@ public class GameManager : MonoBehaviour
             if (a == null)
                 a = new Window("capturawebcam");
 
-            a.ShowImage(OpenCVFace());
+            a.ShowImage(faceMat);
         }
         else if (CanDevelopeMode() == false && a != null)
         {
@@ -391,6 +393,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        return faceMat;
+    }
+
+    public Mat OpenCVWebCam()
+    {
         return faceMat;
     }
 

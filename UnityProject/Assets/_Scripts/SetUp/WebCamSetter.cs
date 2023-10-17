@@ -60,7 +60,7 @@ public class WebCamSetter : MonoBehaviour
         if (GameManager.Instance.GetWebcam().didUpdateThisFrame && GameManager.Instance.CanShowWebcam())
         {
             //_image.material.mainTexture = GameManager.Instance.WebcamToTexture2D(GameManager.Instance.GetWebcam());
-            _cameraMat = GameManager.Instance.OpenCVFace();
+            _cameraMat = GameManager.Instance.OpenCVWebCam();
             _material = GameManager.Instance.MatToTexture(_cameraMat);
             rect.sizeDelta = new Vector2(Mathf.Clamp(((rect.sizeDelta.y * _cameraMat.Width) / _cameraMat.Height),0,rectWidth), rect.sizeDelta.y);
             background.SetActive(true);
