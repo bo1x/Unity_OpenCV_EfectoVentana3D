@@ -65,7 +65,7 @@ public class WebCamSetter : MonoBehaviour
             rect.sizeDelta = new Vector2(Mathf.Clamp(((rect.sizeDelta.y * _cameraMat.Width) / _cameraMat.Height),0,rectWidth), rect.sizeDelta.y);
             background.SetActive(true);
             _image.material.mainTexture = _material;
-            Debug.Log(GameManager.Instance.GetWebcam().requestedFPS + " " + GameManager.Instance.GetWebcam().requestedWidth + " " + GameManager.Instance.GetWebcam().requestedHeight);
+            //Debug.Log(GameManager.Instance.GetWebcam().requestedFPS + " " + GameManager.Instance.GetWebcam().requestedWidth + " " + GameManager.Instance.GetWebcam().requestedHeight);
             _image.SetMaterialDirty();
         }
         _webcamName = GameManager.Instance.GetWebcam().deviceName;

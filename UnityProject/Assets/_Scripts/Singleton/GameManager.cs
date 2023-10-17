@@ -54,7 +54,11 @@ public class GameManager : MonoBehaviour
     OpenCvSharp.Rect lastFace;
     Window a;
 
-    public float X, Y, Z;
+    private float X, Y, Z;
+    private int frameGuiños;
+    private bool guinar = false;
+    
+
 
     private void Awake()
     {
@@ -354,7 +358,7 @@ public class GameManager : MonoBehaviour
 
         faceMat = WebCamMat();
         var faces = faceCascade.DetectMultiScale(faceMat, 1.3, 5);
-
+        
         imageHaveFace = faces.Length == 0 ? false : true;
 
         if(!imageHaveFace)
@@ -373,9 +377,9 @@ public class GameManager : MonoBehaviour
 
                 X = face.Left + face.Width / 2;
                 X = X - faceMat.Width / 2;
-                Debug.Log(X);
+                //Debug.Log(X);
                 X = X * (360f / faceMat.Height);
-                Debug.Log(X);
+               // Debug.Log(X);
                 Y = face.Top + face.Height / 2;
                 Y = Y - faceMat.Height / 2;
                 Y = Y * (360f / faceMat.Height);
@@ -389,6 +393,28 @@ public class GameManager : MonoBehaviour
                 Cv2.Circle(faceMat, centro, 1, color, 5);
                 Cv2.Rectangle(faceMat, face.TopLeft, face.BottomRight, new Scalar(0, 255, 0), 2);
             }
+        }
+        var eyes = eyeCascade.DetectMultiScale(faceMat, 1.3, 5);
+        foreach (OpenCvSharp.Rect eye in eyes)
+        {
+            guinar = false;
+            if (eyes.Length == 1)
+            {
+                frameGuiños++;
+
+            }
+            if (eyes.Length >= 2)
+            {
+                frameGuiños = 0;
+            }
+            if (frameGuiños >= 8)
+            {
+                guinar = true;
+            }
+            Debug.Log(eyes.Length);
+            Point centroojo = new Point(eye.Left + eye.Width / 2, eye.Top + eye.Height / 2);
+            Scalar colorojo = new Scalar(0, 0, 255);
+            Cv2.Circle(faceMat, centroojo, 1, colorojo, 5);
         }
 
         return faceMat;
@@ -413,7 +439,10 @@ public class GameManager : MonoBehaviour
 
         return _webcamMat;
     }
-
+    public bool IsgGuinado()
+    {
+        return guinar;
+    }
     #region Conversiones entre imagenes
     public Mat TextureToMat(Texture2D sourceTexture)
     {
