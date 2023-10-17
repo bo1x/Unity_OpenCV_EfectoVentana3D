@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     OpenCvSharp.Rect lastFace;
     Window a;
 
-    public int X, Y, Z;
+    public float X, Y, Z;
 
     private void Awake()
     {
@@ -365,17 +365,19 @@ public class GameManager : MonoBehaviour
             if (faces.Length == 1)
                 lastFace = face;
 
-
-            Debug.Log(face.Top);
-
             if (faces.Length == 1 || face.Top < lastFace.Top + offsetFace && face.Top > lastFace.Top - offsetFace && face.Left < lastFace.Left + offsetFace && face.Left > lastFace.Left - offsetFace)
             {
 
                 X = face.Left + face.Width / 2;
-                X = X - GetWebcam().width / 2;
+                X = X - faceMat.Width / 2;
+                Debug.Log(X);
+                X = X * (360f / faceMat.Height);
+                Debug.Log(X);
                 Y = face.Top + face.Height / 2;
-                Y = Y - GetWebcam().height / 2;
+                Y = Y - faceMat.Height / 2;
+                Y = Y * (360f / faceMat.Height);
                 Z = face.Height;
+                Z = Z * (360f / faceMat.Height);
                 Y = -Y;
 
 
