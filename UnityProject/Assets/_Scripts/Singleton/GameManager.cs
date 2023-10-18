@@ -403,7 +403,7 @@ public class GameManager : MonoBehaviour
             guinar = false;
             if (eyes.Length == 1)
             {
-                if (faces[0].Location.X>eye.Location.X)
+                if (faces[0].Left + faces[0].Width / 2 > eye.Left+eye.Width/2)
                 {
                     isIzquierdo = true;
                 }
@@ -412,7 +412,7 @@ public class GameManager : MonoBehaviour
                     isIzquierdo= false;
                 }
                 frameGuiños++;
-
+                
             }
             if (eyes.Length >= 2)
             {
@@ -422,7 +422,7 @@ public class GameManager : MonoBehaviour
             {
                 guinar = true;
             }
-            //Debug.Log(eyes.Length);
+            Debug.Log(isIzquierdo);
             Point centroojo = new Point(eye.Left + eye.Width / 2, eye.Top + eye.Height / 2);
             Scalar colorojo = new Scalar(0, 0, 255);
             Cv2.Circle(faceMat, centroojo, 1, colorojo, 5);
