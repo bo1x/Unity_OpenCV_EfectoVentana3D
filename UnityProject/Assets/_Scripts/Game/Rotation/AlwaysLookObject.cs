@@ -113,14 +113,6 @@ public class AlwaysLookObject : MonoBehaviour
     void DarVoltereta()
     {
         Debug.Log(GameManager.Instance.iZquierdo());
-        alien.transform.Rotate(360 * Vector3.up * Time.deltaTime, Space.Self);
-        if (GameManager.Instance.iZquierdo())
-        {
-            alien.transform.Rotate(360 * Vector3.up * Time.deltaTime, Space.Self);
-        }
-        else
-        {
-            alien.transform.Rotate(-360 * Vector3.up * Time.deltaTime, Space.Self);
-        }
+        alien.transform.Rotate(360 * (GameManager.Instance.iZquierdo() ? Vector3.up : Vector3.down ) * Time.deltaTime, Space.Self);
     }
 }
