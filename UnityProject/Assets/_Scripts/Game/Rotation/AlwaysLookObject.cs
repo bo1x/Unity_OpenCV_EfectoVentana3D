@@ -105,13 +105,22 @@ public class AlwaysLookObject : MonoBehaviour
         x = _Position.x + axis.x / SensivilityX;
         y = Mathf.Clamp(_Position.y + offsetY + axis.y / SensivilityY, 8.8f, Mathf.Infinity);
         z = GameManager.Instance.HaveAxisZ() ? Mathf.Clamp(_Position.z + offsetZ + axis.z / Mathf.Clamp(SensivilityZ, 0,30), maxnear, 15 - maxnear) : _Position.z;
-        Debug.Log(axis.x);
+       // Debug.Log(axis.x);
         gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, new Vector3(x, y, z), 0.1f);
         gameObject.transform.LookAt(objeto.transform);
     }
 
     void DarVoltereta()
     {
-        alien.transform.Rotate(-360 * Vector3.up * Time.deltaTime, Space.Self);
+        Debug.Log(GameManager.Instance.iZquierdo());
+        alien.transform.Rotate(360 * Vector3.up * Time.deltaTime, Space.Self);
+        if (GameManager.Instance.iZquierdo())
+        {
+            alien.transform.Rotate(360 * Vector3.up * Time.deltaTime, Space.Self);
+        }
+        else
+        {
+            alien.transform.Rotate(-360 * Vector3.up * Time.deltaTime, Space.Self);
+        }
     }
 }

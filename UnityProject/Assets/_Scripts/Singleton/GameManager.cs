@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
     private float X, Y, Z;
     private int frameGuiños;
     private bool guinar = false;
+    private bool isIzquierdo = false;
     
 
 
@@ -402,6 +403,14 @@ public class GameManager : MonoBehaviour
             guinar = false;
             if (eyes.Length == 1)
             {
+                if (faces[0].Location.X>eye.Location.X)
+                {
+                    isIzquierdo = true;
+                }
+                else
+                {
+                    isIzquierdo= false;
+                }
                 frameGuiños++;
 
             }
@@ -413,12 +422,12 @@ public class GameManager : MonoBehaviour
             {
                 guinar = true;
             }
-            Debug.Log(eyes.Length);
+            //Debug.Log(eyes.Length);
             Point centroojo = new Point(eye.Left + eye.Width / 2, eye.Top + eye.Height / 2);
             Scalar colorojo = new Scalar(0, 0, 255);
             Cv2.Circle(faceMat, centroojo, 1, colorojo, 5);
         }
-
+        
         return faceMat;
     }
 
@@ -449,6 +458,10 @@ public class GameManager : MonoBehaviour
     public bool IsgGuinado()
     {
         return guinar;
+    }
+    public bool iZquierdo()
+    {
+        return isIzquierdo;
     }
     #region Conversiones entre imagenes
     public Mat TextureToMat(Texture2D sourceTexture)
