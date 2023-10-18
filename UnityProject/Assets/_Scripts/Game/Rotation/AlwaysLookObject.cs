@@ -7,6 +7,8 @@ public class AlwaysLookObject : MonoBehaviour
 {
     public GameObject objeto;
 
+    public GameObject alien;
+
     private Vector3 _Position;
 
     private float maxnear = 2f;
@@ -34,7 +36,9 @@ public class AlwaysLookObject : MonoBehaviour
         }
         sensibilityText.gameObject.SetActive(true);
 
-        
+        if(GameManager.Instance.IsgGuinado())
+            DarVoltereta();
+
         if (Input.GetKey(KeyCode.H))
         {
             ManualSensibilityX = 176.7f;
@@ -104,5 +108,10 @@ public class AlwaysLookObject : MonoBehaviour
         Debug.Log(axis.x);
         gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, new Vector3(x, y, z), 0.1f);
         gameObject.transform.LookAt(objeto.transform);
+    }
+
+    void DarVoltereta()
+    {
+        alien.transform.Rotate(-360 * Vector3.up * Time.deltaTime, Space.Self);
     }
 }
