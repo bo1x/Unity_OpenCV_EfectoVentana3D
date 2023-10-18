@@ -7,36 +7,29 @@ using TMPro;
 public class DropdownWebcam : MonoBehaviour
 {
     public TMP_Dropdown _dropdown;
-    private int _realValue;
     private bool _wasOpened = false;
     private string _text;
     private string _none = "(none)";
+    public static List<TMP_Dropdown.OptionData> list;
     [SerializeField] private Button _button;
 
     // Start is called before the first frame update
     void Awake()
     {
-        _realValue = 0;
-        _dropdown = GetComponent<TMP_Dropdown>();
 
-        SetNewList();
     }
 
     private void Start()
     {
-        if(GameManager.Instance.GetWebcam() == null)
-        {
-            _text = _none;
-            _dropdown.captionText.text = _none;
-            _button.interactable = false;
-        }
+        _dropdown = GetComponent<TMP_Dropdown>();
+
+        if (list == null)
+            SetNewList();
         else
         {
-            _text = GameManager.Instance.GetWebcam().deviceName;
-            _dropdown.captionText.text = GameManager.Instance.GetWebcam().deviceName;
-            _button.interactable = true;
+            _dropdown.options = list;
+            _dropdown.value = GameManager.Instance.whatdropdown();
         }
-
     }
 
     // Update is called once per frame
@@ -45,7 +38,9 @@ public class DropdownWebcam : MonoBehaviour
         if (!_dropdown.IsExpanded)
         {
             if (_wasOpened == true && _dropdown.value != 0)
+            {
                 SetCamera();
+            }
             else if (_dropdown.value == 0)
             {
                 GameManager.Instance.StopWebcam();
@@ -74,7 +69,6 @@ public class DropdownWebcam : MonoBehaviour
         if (_wasOpened)
             return;
 
-        _realValue = _dropdown.value;
         _text = _dropdown.captionText.text;
 
         _dropdown.ClearOptions();
@@ -90,8 +84,10 @@ public class DropdownWebcam : MonoBehaviour
         {
             _dropdown.options.Add(new TMP_Dropdown.OptionData() { text = t });
         }
-        _dropdown.value = _realValue;
+        GameManager.Instance.setdropdown(_dropdown.value);
         _wasOpened = _dropdown.IsExpanded;
+
+        list = _dropdown.options;
 
         _dropdown.captionText.text = _text;
     }

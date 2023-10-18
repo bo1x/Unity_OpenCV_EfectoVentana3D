@@ -6,6 +6,26 @@ public class DropDownSize : DropDown
 {
     void Start()
     {
+        if (GameManager.Instance.GetWebcam() != null)
+            switch (GameManager.Instance.GetWebcam().requestedWidth)
+            {
+                case 144:
+                    dropDown.value = 0;
+                    break;
+                case 240:
+                    dropDown.value = 1;
+                    break;
+                case 360:
+                    dropDown.value = 2;
+                    break;
+                case 480:
+                    dropDown.value = 3;
+                    break;
+                case 720:
+                    dropDown.value = 4;
+                    break;
+            }
+
         OnChanged();
     }
 
