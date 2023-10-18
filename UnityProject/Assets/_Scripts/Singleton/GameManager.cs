@@ -80,12 +80,13 @@ public class GameManager : MonoBehaviour
         _loading.SetActive(false);
 
         debugWindow();
+        /*
         faceCascade.Load(Application.dataPath + "/haarcascades/haarcascade_frontalface_default.xml");
-        eyeCascade.Load(Application.dataPath + "/haarcascades/haarcascade_eye.xml");
+        eyeCascade.Load(Application.dataPath + "/haarcascades/haarcascade_eye.xml");*/
 
-        /* Recordar sustituir a la hora de buildear XD y tambien de añadir la carpeta en lo del programa
+
         faceCascade.Load(System.IO.Directory.GetCurrentDirectory() + "/haarcascades/haarcascade_frontalface_default.xml");
-        eyeCascade.Load(System.IO.Directory.GetCurrentDirectory() + "/haarcascades/haarcascade_eye.xml");*/
+        eyeCascade.Load(System.IO.Directory.GetCurrentDirectory() + "/haarcascades/haarcascade_eye.xml");
     }
 
     private void Update()
@@ -422,7 +423,6 @@ public class GameManager : MonoBehaviour
             {
                 guinar = true;
             }
-            Debug.Log(isIzquierdo);
             Point centroojo = new Point(eye.Left + eye.Width / 2, eye.Top + eye.Height / 2);
             Scalar colorojo = new Scalar(0, 0, 255);
             Cv2.Circle(faceMat, centroojo, 1, colorojo, 5);

@@ -36,8 +36,14 @@ public class AlwaysLookObject : MonoBehaviour
         }
         sensibilityText.gameObject.SetActive(true);
 
-        if(GameManager.Instance.IsgGuinado())
-            DarVoltereta();
+        if (GameManager.Instance.CanEyeTracking()) {
+            if (GameManager.Instance.IsgGuinado())
+                DarVoltereta();
+        }
+        else
+        {
+            alien.transform.rotation = Quaternion.identity;
+        }
 
         if (Input.GetKey(KeyCode.H))
         {
@@ -112,7 +118,6 @@ public class AlwaysLookObject : MonoBehaviour
 
     void DarVoltereta()
     {
-        Debug.Log(GameManager.Instance.iZquierdo());
         alien.transform.Rotate(360 * (GameManager.Instance.iZquierdo() ? Vector3.up : Vector3.down ) * Time.deltaTime, Space.Self);
     }
 }
