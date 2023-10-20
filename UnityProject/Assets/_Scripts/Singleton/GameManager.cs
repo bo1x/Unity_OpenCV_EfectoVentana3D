@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     Window a;
 
     private float X, Y, Z;
-    private int frameGuiños;
+    private int frameGuinos;
     private bool guinar = false;
     private bool isIzquierdo = false;
     
@@ -83,7 +83,6 @@ public class GameManager : MonoBehaviour
         /*
         faceCascade.Load(Application.dataPath + "/haarcascades/haarcascade_frontalface_default.xml");
         eyeCascade.Load(Application.dataPath + "/haarcascades/haarcascade_eye.xml");*/
-
 
         faceCascade.Load(System.IO.Directory.GetCurrentDirectory() + "/haarcascades/haarcascade_frontalface_default.xml");
         eyeCascade.Load(System.IO.Directory.GetCurrentDirectory() + "/haarcascades/haarcascade_eye.xml");
@@ -412,14 +411,14 @@ public class GameManager : MonoBehaviour
                 {
                     isIzquierdo= false;
                 }
-                frameGuiños++;
+                frameGuinos++;
                 
             }
             if (eyes.Length >= 2)
             {
-                frameGuiños = 0;
+                frameGuinos = 0;
             }
-            if (frameGuiños >= 8)
+            if (frameGuinos >= 8)
             {
                 guinar = true;
             }

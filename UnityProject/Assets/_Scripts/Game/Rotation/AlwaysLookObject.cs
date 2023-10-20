@@ -29,14 +29,8 @@ public class AlwaysLookObject : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.CanDevelopeMode())
+        if (GameManager.Instance.CanEyeTracking())
         {
-            sensibilityText.gameObject.SetActive(false);
-            return;
-        }
-        sensibilityText.gameObject.SetActive(true);
-
-        if (GameManager.Instance.CanEyeTracking()) {
             if (GameManager.Instance.IsgGuinado())
                 DarVoltereta();
         }
@@ -44,6 +38,13 @@ public class AlwaysLookObject : MonoBehaviour
         {
             alien.transform.rotation = Quaternion.identity;
         }
+
+        if (!GameManager.Instance.CanDevelopeMode())
+        {
+            sensibilityText.gameObject.SetActive(false);
+            return;
+        }
+        sensibilityText.gameObject.SetActive(true);
 
         if (Input.GetKey(KeyCode.H))
         {
