@@ -1,4 +1,4 @@
 # FaceExplorer
-Proyecto realizado por:
-Alejandro Boix Perez (Face and Eye tracking and recognition with OPENCV_CSHARP)
+Proyecto realizado por:<br>
+Alejandro Boix Perez (Face and Eye tracking and recognition with OPENCV_CSHARP)<br>
 Carlos Fernando Izquierdo Riera (UI design and scene transition)
